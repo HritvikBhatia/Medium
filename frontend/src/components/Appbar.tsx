@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar } from "./BlogCard";
 import { LogOut } from "lucide-react";
 
 export const Appbar = () => {
 
+  const navigate = useNavigate();
   const logOut = () => {
     localStorage.removeItem("token");
+    navigate("/Signin");
   }
 
   return (
