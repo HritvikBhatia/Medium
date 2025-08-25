@@ -1,7 +1,13 @@
 import { Link } from "react-router-dom";
 import { Avatar } from "./BlogCard";
+import { LogOut } from "lucide-react";
 
 export const Appbar = () => {
+
+  const logOut = () => {
+    localStorage.removeItem("token");
+  }
+
   return (
     <div className="border-b flex justify-between px-10 py-3 ">
       
@@ -21,6 +27,7 @@ export const Appbar = () => {
       
         <div>
           <Avatar name="Hritvik" size={2.3} />
+          <button onClick={logOut}><LogOut/></button>
         </div>
       
       </div>
