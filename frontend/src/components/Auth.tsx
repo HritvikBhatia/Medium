@@ -7,7 +7,7 @@ import { BACKEND_URL } from "../config";
 export const Auth = ({ type }: { type: "signup" | "signin" }) => {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState<Boolean>();
+  const [loading, setLoading] = useState<Boolean>(false);
 
   const [postInput, setPostInputs] = useState<SignupInput>({
     name: "",
@@ -15,7 +15,6 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     password: "",
   });
 
-  setLoading(false);
 
   async function SendRequest(){
     try{
@@ -24,8 +23,11 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
       const jwt = response.data;
       localStorage.setItem("token",jwt);
       navigate("/blogs")
-    }catch(e){
-
+    }catch (e) {
+      console.error(e);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -76,7 +78,11 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
                 });
               }}
             />
-            {loading?<button type="button" className="mt-8 w-full text-gray-900 bg-gradient-to-r from-lime-300 via-lime-500 to-lime-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-400 dark:focus:ring-lime-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Loading</button> : <button onClick={SendRequest} type="button" className="mt-8 w-full text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">{type === "signup"? "Sign up" : "Sign in"}</button> }
+             <button onClick={SendRequest} type="button" className="mt-8 w-full text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"> {loading
+                ? "Loading..."
+                : type === "signup"
+                ? "Sign up"
+                : "Sign in"}</button>
           </div>
         </div>
       </div>
