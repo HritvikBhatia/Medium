@@ -3,11 +3,12 @@ import axios from "axios";
 import { ChangeEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../config";
+import { Loader2 } from "lucide-react";
 
 export const Auth = ({ type }: { type: "signup" | "signin" }) => {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState<Boolean>(false);
+  const [loading, setLoading] = useState<boolean >(false);
 
   const [postInput, setPostInputs] = useState<SignupInput>({
     name: "",
@@ -78,8 +79,11 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
                 });
               }}
             />
-             <button onClick={SendRequest} type="button" className="mt-8 w-full text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"> {loading
-                ? "Loading..."
+             <button disabled={loading}  onClick={SendRequest} type="button" className={`mt-8 w-full grad_back text-white  font-bold rounded-lg hover:opacity-85 transition-all duration-150 text-sm px-5 py-2.5 text-center me-2 mb-2 ${loading && "opacity-80 cursor-not-allowed"}`}> {loading
+                ? <div className="flex items-center justify-center gap-2">
+                <Loader2 size={14} className="animate-spin"/>
+                <span>Loading...</span>
+                </div>
                 : type === "signup"
                 ? "Sign up"
                 : "Sign in"}</button>

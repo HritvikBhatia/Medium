@@ -13,7 +13,7 @@ export const Blog = () => {
     if(loading || !blog){
       return <div>
         <Appbar/>
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-20">
           <div className="grid grid-cols-12 px-10 w-full pt-200 max-w-screen-xl pt-12">
               <div className="col-span-8">
                 <BlogSkeleton/>
@@ -26,7 +26,7 @@ export const Blog = () => {
       </div>
 }
 
-  return <div>
+  return <div >
     <FullBlog blog={blog}/>
   </div>
 }
