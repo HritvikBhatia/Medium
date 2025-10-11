@@ -1,0 +1,114 @@
+/* Body and background */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #f0f0f0; /* light grey background */
+  color: #333; /* readable text */
+}
+
+/* Blog post card */
+.blog-post {
+  background-color: #fff; /* white card */
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* subtle shadow */
+}
+
+/* Blog title */
+.blog-post h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #222;
+}
+
+/* Blog content */
+.blog-post p {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #555;
+}
+
+/* Actions container with spacing */
+.actions {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* space between all action items */
+}
+
+/* Heart button */
+.like-btn {
+  width: 14px;
+  height: 14px;
+  background-color: black;
+  position: relative;
+  transform: rotate(-45deg);
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.like-btn::before,
+.like-btn::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background-color: black;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.like-btn::before {
+  left: 6px;
+}
+
+.like-btn::after {
+  top: -6px;
+}
+
+.like-btn.liked {
+  background-color: red;
+}
+
+.like-btn.liked::before,
+.like-btn.liked::after {
+  background-color: red;
+}
+
+/* Like count with space from heart */
+.like-count {
+  font-size: 14px;
+  color: #333;
+  margin-left: 5px;
+}
+
+/* Bookmark button */
+.bookmark-btn {
+  width: 14px;
+  height: 18px;
+  background-color: black;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.bookmark-btn.bookmarked {
+  background-color: blue;
+}
+
+/* Share icon */
+.share-btn {
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.share-btn:hover {
+  color: #0077cc; /* highlight on hover */
+}
