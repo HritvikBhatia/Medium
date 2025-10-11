@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.gradient-text {
+  background: linear-gradient(to right, #d9f99d, #a3e635, #84cc16);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; 
+  color: transparent;
+}
+
+.header-shadow{
+  
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+}
+
+.grad_back{
+ background: linear-gradient(90deg,rgba(134, 212, 108, 1) 0%, rgba(23, 227, 16, 1) 50%, rgba(23, 230, 140, 1) 100%);
+
+/* background: linear-gradient(120deg, #00c853, #64dd17, #aeea00); */
+
+}
+
+.card-shadow{
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+

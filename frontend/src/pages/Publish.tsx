@@ -12,7 +12,7 @@ export const Publish = () =>{
 
     return <div>
         <Appbar/>
-        <main className="flex-grow p-4">
+        <main className="flex-grow p-4 mt-20">
             <div className="max-w-3xl mx-auto">
                 <div className="flex items-center mb-4">
                     <Plus className="text-gray-400 mr-2" />
