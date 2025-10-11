@@ -16,4 +16,11 @@ app.use('/*', cors())
 app.route("/api/v1/user", userRouter);
 app.route("/api/v1/blog", blogRouter);
 
+app.notFound((c) => {
+  c.status(404);
+  return c.json({
+    message: "Route not found.",
+  });
+});
+
 export default app;
