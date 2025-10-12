@@ -40,6 +40,7 @@ blogRouter.use("/*", async (c, next) => {
     c.status(403);
     return c.json({
       message: "Authentication failed. Invalid token.",
+      error
     });
   }
 });

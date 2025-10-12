@@ -17,25 +17,47 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     password: "",
   });
 
-  async function SendRequest() {
-    try {
-      setLoading(true);
-      const response = await axios.post(
-        `${BACKEND_URL}/api/v1/user/${type === "signup" ? "signup" : "signin"}`,
-        postInput
-      );
-      const jwt = response.data;
-      localStorage.setItem("token", jwt);
-      toast.success(`${type === "signup" ? "Signup" : "Signin"} successful!`);
-      navigate("/blogs");
-    } catch (e: any) {
-      console.error(e);
-      const message = e?.response?.data?.message || "Something went wrong. Please try again.";
-      toast.error(message);
-    } finally {
-      setLoading(false);
+async function SendRequest() {
+  try {
+    setLoading(true);
+
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/user/${type === "signup" ? "signup" : "signin"}`,
+      postInput
+    );
+
+    const jwt = response.data;
+    localStorage.setItem("token", jwt);
+
+    toast.success(`${type === "signup" ? "Signup" : "Signin"} successful!`);
+    navigate("/blogs");
+  } catch (error: unknown) {
+    console.error("Auth Error:", error);
+
+    let message = "Something went wrong. Please try again.";
+
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      const dataMessage = error.response?.data?.message;
+
+      if (type === "signup" && (status === 411 || status === 409)) {
+        message = "User already exists. Please sign in instead.";
+      } else if (dataMessage) {
+        message = dataMessage;
+      } else if (status) {
+        message = `Request failed with status ${status}`;
+      } else if (error.message) {
+        message = error.message;
+      }
+    } else if (error instanceof Error) {
+      message = error.message;
     }
+
+    toast.error(message);
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <div className="h-screen flex justify-center flex-col">
