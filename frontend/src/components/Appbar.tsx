@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 // import { Avatar } from "./BlogCard";
 import { LogOut } from "lucide-react";
 import avatarImage from "../assets/bussiness-man.png"
+import { toast } from "sonner";
 export const Appbar = () => {
 
   const navigate = useNavigate();
@@ -30,7 +31,10 @@ export const Appbar = () => {
         <div className="flex items-center gap-4">
           {/* <Avatar  name="Hritvik" size={2.3} /> */}
           <img src={avatarImage} loading="lazy" alt="avatar image" className="h-9 w-9" />
-          <button onClick={logOut}><LogOut/></button>
+          <button onClick={()=>{
+            logOut();
+            toast.success("Logged out successfully");
+          }}><LogOut/></button>
         </div>
       
       </div>
