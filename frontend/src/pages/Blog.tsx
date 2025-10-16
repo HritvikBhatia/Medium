@@ -2,8 +2,6 @@ import { useParams } from "react-router-dom";
 import { useBlog } from "../hooks";
 import { FullBlog } from "../components/FullBlog";
 import { BlogSkeleton } from "../components/BlogSkeleton";
-import { Appbar } from "../components/Appbar";
-
 export const Blog = () => {
     const { id } = useParams();
     const {loading , blog} = useBlog({
@@ -12,7 +10,6 @@ export const Blog = () => {
 
     if(loading || !blog){
       return <div>
-        <Appbar/>
         <div className="flex justify-center mt-20">
           <div className="grid grid-cols-12 px-10 w-full pt-200 max-w-screen-xl">
               <div className="col-span-8">

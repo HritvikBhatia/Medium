@@ -8,7 +8,8 @@ export interface Blog{
         "id": number,
         "author": {
             "name": string
-        }
+        },
+        "createdAt" : string
 }
 
 export const useBlog = ({ id } : { id: string }) => {
@@ -18,11 +19,12 @@ export const useBlog = ({ id } : { id: string }) => {
     useEffect(() => {
         axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
             headers: {
-                Authorization: localStorage.getItem("token")
+                Authorization: localStorage.getItem("authorization")
             }
         })
             .then(response => {
                 setBlog(response.data.blog);
+                // console.log("id blogs "+response.data.blogs);
                 setLoading(false);
             })
     }, [])
@@ -40,11 +42,12 @@ export const useBlogs = () => {
     useEffect(() => {
         axios.get(`${BACKEND_URL}/api/v1/blog/bulk`, {
             headers: {
-                Authorization: localStorage.getItem("token")
+                Authorization: localStorage.getItem("authorization")
             }
         })
             .then(response => {
                 setBlogs(response.data.blogs);
+                // console.log("Full bulk response:", response.data);
                 setLoading(false);
             })
     }, [])

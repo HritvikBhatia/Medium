@@ -1,5 +1,4 @@
 import { Plus } from "lucide-react";
-import { Appbar } from "../components/Appbar";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { useState } from "react";
@@ -32,7 +31,7 @@ export const Publish = () => {
         },
         {
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: localStorage.getItem("authorization"),
           },
         }
       );
@@ -62,7 +61,6 @@ export const Publish = () => {
 
   return (
     <div>
-      <Appbar />
       <main className="flex-grow p-4 mt-20">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center mb-4">

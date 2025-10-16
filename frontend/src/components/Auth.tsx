@@ -27,7 +27,10 @@ async function SendRequest() {
     );
 
     const jwt = response.data;
-    localStorage.setItem("token", jwt);
+    // console.log(jwt);
+    
+    localStorage.setItem("authorization", `Bearer ${jwt}`);
+    // console.log(localStorage.getItem("authorization"))
 
     toast.success(`${type === "signup" ? "Signup" : "Signin"} successful!`);
     navigate("/blogs");
@@ -85,7 +88,7 @@ async function SendRequest() {
               />
             ) : null}
             <LabelledInput
-              label="UserName"
+              label="Email"
               placeholder="abc123@gmail.com"
               onChange={(e) => {
                 setPostInputs({ ...postInput, username: e.target.value });

@@ -68,6 +68,7 @@ blogRouter.post("/", async (c) => {
         title: body.title,
         content: body.content,
         authorId: Number(authorId),
+        createdAt: new Date()
       },
     });
 
@@ -140,6 +141,7 @@ blogRouter.get("/bulk", async (c) => {
         content: true,
         title: true,
         id: true,
+        createdAt: true,
         author: {
           select: {
             name: true,
@@ -156,6 +158,43 @@ blogRouter.get("/bulk", async (c) => {
     c.status(500);
     return c.json({
       message: "Failed to fetch blog posts.",
+    });
+  }
+});
+
+blogRouter.get("/user", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const authorId = c.get("userId");
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(authorId),
+      },
+      select: {
+        name: true,
+        username: true
+      },
+    });
+
+    if (!user) {
+      c.status(404);
+      return c.json({
+        message: "User not found.",
+      });
+    }
+
+    return c.json({
+      user,
+    });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    c.status(500);
+    return c.json({
+      message: "An unexpected error occurred while fetching user information.",
     });
   }
 });
@@ -183,6 +222,7 @@ blogRouter.get("/:id", async (c) => {
         id: true,
         content: true,
         title: true,
+        createdAt: true,
         author: {
           select: {
             name: true,

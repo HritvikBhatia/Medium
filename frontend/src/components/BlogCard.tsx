@@ -15,45 +15,61 @@ export const BlogCard = ({
     title,
     content,
     publishedDate
-} : BlogCardProps) => {
-    return <Link to={`/blog/${id}`}> 
-    <div className="p-4 border-b border-slate-200 pb-4  w-screen sm:max-w-screen-lg max-w-screen-md  card-shadow rounded-xl hover:scale-105 hover:shadow-lg transition-all duration-300">
-        <div className="flex">
-            <Avatar name={authorName} size={1.7}/>
-            <div className="font-semibold pl-2 text-sm flex justify-center flex-col"> {authorName} </div>
-            <div className="flex justify-center flex-col pl-2"> <Circle/> </div>
-            <div className="font-bold pl-3  text-slate-500 text-sm flex justify-center flex-col"> {publishedDate} </div>
-        </div>
-        <div className="text-xl font-semibold">
-            {title}
-        </div>
-        <div className="text-md font-thin">
-            {content.slice(0,100)+"..."}
-        </div>
-        <div className="text-sm font-thin text-slate-500 pt-4 flex items-center gap-2">
-            <p>{`${Math.ceil(content.length/100)} min read`}</p>
-            {/* <CheckCheck size={16} className="text-green-500 font-bold"/> */}
-            <CheckCircle size={16} className="text-green-500 font-bold"/>
-        </div>
-    </div>
-    </Link>
-}
+}: BlogCardProps) => {
 
-export function Circle(){
-    return <div className="h-1 w-1 rounded-full bg-slate-400">
+    // console.log("publish date : " +publishedDate);
+    
 
-    </div>
-}
-
-export function Avatar({ name, size }: { name: string, size: number }) {
     return (
-        <div
-            className="relative inline-flex items-center justify-center overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600"
-            style={{ width: `${size}rem`, height: `${size}rem` }} // Inline styles for width and height
-        >
-            <span className="font-medium text-gray-600 dark:text-gray-300">
-                {name[0]}
-            </span>
+        <Link key={id} to={`/blog/${id}`} className="block group"> 
+            <div className="p-6 bg-white border border-gray-200 rounded-2xl mb-4 hover:bg-white/80 hover:backdrop-blur-sm transition-colors">
+                <div className="flex items-center gap-2 mb-4 text-sm text-gray-600">
+                    <Avatar name={authorName} size="small" />
+                    <span className="font-medium text-gray-900">{authorName}</span>
+                    <Circle />
+                    <span className="text-gray-500">{publishedDate}</span>
+                </div>
+                
+                <div className="mb-3">
+                    <h2 className="text-xl font-bold text-gray-900 group-hover:text-gray-700 line-clamp-2">
+                        {title}
+                    </h2>
+                </div>
+                
+                <div className="mb-4">
+                    <p className="text-gray-600 leading-relaxed line-clamp-3">
+                        {content.slice(0, 120) + (content.length > 120 ? "..." : "")}
+                    </p>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                    <span>{`${Math.ceil(content.length / 100)} min read`}</span>
+                    <CheckCircle size={16} className="text-green-500" />
+                </div>
+            </div>
+        </Link>
+    );
+}
+
+export function Circle() {
+    return <div className="w-1 h-1 rounded-full bg-gray-400" />;
+}
+
+interface AvatarProps {
+    name: string;
+    size: "small" | "medium" | "large";
+}
+
+export function Avatar({ name, size }: AvatarProps) {
+    const sizeClasses = {
+        small: "w-6 h-6 text-xs",
+        medium: "w-8 h-8 text-sm",
+        large: "w-12 h-12 text-base"
+    };
+
+    return (
+        <div className={`${sizeClasses[size]} bg-gray-100 rounded-full flex items-center justify-center font-medium text-gray-700`}>
+            {name[0].toUpperCase()}
         </div>
     );
 }
