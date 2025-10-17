@@ -84,6 +84,175 @@ blogRouter.post("/", async (c) => {
   }
 });
 
+//post like blog 
+blogRouter.post("/:id/like", async (c) => {
+
+  const id = c.req.param("id");
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    
+    if (isNaN(Number(id))) {
+    c.status(400);
+    return c.json({
+      message: "Invalid blog ID. ",
+    });
+  }
+
+    const authorId = c.get("userId");
+
+    const updatedBlog = await prisma.blog.update({
+      where:{
+        id: Number(id)
+      },
+      data: {
+        likedBy: { connect: { id: Number(authorId) } }
+      },
+    });
+
+    return c.json({
+      "message" : "Blog liked successfully",
+      id: updatedBlog.id,
+    }, 201);
+  } catch (error) {
+    console.error("Error Liking blog:", error);
+    c.status(500);
+    return c.json({
+      message: "An unexpected error occurred while liking the blog post.",
+    });
+  }
+});
+
+// delete blog like
+blogRouter.delete("/:id/like", async (c) => {
+
+  const id = c.req.param("id");
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    
+    if (isNaN(Number(id))) {
+    c.status(400);
+    return c.json({
+      message: "Invalid blog ID. ",
+    });
+  }
+
+    const authorId = c.get("userId");
+
+    const updatedBlog = await prisma.blog.update({
+      where:{
+        id: Number(id)
+      },
+      data: {
+        likedBy: { disconnect: { id: Number(authorId) } }
+      },
+    });
+
+    return c.json({
+      "message" : "Blog unliked successfully",
+      id: updatedBlog.id,
+    }, 201);
+  } catch (error) {
+    console.error("Error unLiking blog:", error);
+    c.status(500);
+    return c.json({
+      message: "An unexpected error occurred while unliking the blog post.",
+    });
+  }
+});
+
+//add a bookmark
+blogRouter.post("/:id/bookmark", async (c) => {
+
+  const id = c.req.param("id");
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    
+    if (isNaN(Number(id))) {
+    c.status(400);
+    return c.json({
+      message: "Invalid blog ID. ",
+    });
+  }
+
+    const authorId = c.get("userId");
+
+    const updatedBlog = await prisma.blog.update({
+      where:{
+        id: Number(id)
+      },
+      data: {
+        bookmarkedBy: { connect: { id: Number(authorId) } }
+      },
+    });
+
+    return c.json({
+      "message" : "Blog bookmarked successfully",
+      id: updatedBlog.id,
+    }, 201);
+  } catch (error) {
+    console.error("Error bookmarking blog:", error);
+    c.status(500);
+    return c.json({
+      message: "An unexpected error occurred while bookmarking the blog post.",
+    });
+  }
+});
+
+// delete bookmark
+blogRouter.delete("/:id/bookmark", async (c) => {
+
+  const id = c.req.param("id");
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    
+    if (isNaN(Number(id))) {
+    c.status(400);
+    return c.json({
+      message: "Invalid blog ID. ",
+    });
+  }
+
+    const authorId = c.get("userId");
+
+    const updatedBlog = await prisma.blog.update({
+      where:{
+        id: Number(id)
+      },
+      data: {
+        bookmarkedBy: { disconnect: { id: Number(authorId) } }
+      },
+    });
+
+    return c.json({
+      "message" : "Blog unmarked successfully",
+      id: updatedBlog.id,
+    }, 201);
+  } catch (error) {
+    console.error("Error unmarking blog:", error);
+    c.status(500);
+    return c.json({
+      message: "An unexpected error occurred while unmarking the blog post.",
+    });
+  }
+});
+
+
 blogRouter.put("/", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -99,10 +268,14 @@ blogRouter.put("/", async (c) => {
         message: "Input validation failed. ID, title, or content is missing/invalid.",
       });
     }
+    
+    const authorId = c.get("userId");
+
 
     const blog = await prisma.blog.update({
       where: {
         id: body.id,
+        authorId: Number(authorId)
       },
       data: {
         title: body.title,
@@ -142,6 +315,22 @@ blogRouter.get("/bulk", async (c) => {
         title: true,
         id: true,
         createdAt: true,
+        likedBy: {
+          select:{
+            username: true
+          }
+        },
+        bookmarkedBy: {
+          select:{
+            username: true
+          }
+        },
+        _count: {
+          select: { 
+            likedBy: true,
+            bookmarkedBy: true 
+          },
+        },
         author: {
           select: {
             name: true,
@@ -223,6 +412,22 @@ blogRouter.get("/:id", async (c) => {
         content: true,
         title: true,
         createdAt: true,
+        likedBy: {
+          select:{
+            username: true
+          }
+        },
+        bookmarkedBy: {
+          select:{
+            username: true
+          }
+        },
+        _count: {
+          select: { 
+            likedBy: true,
+            bookmarkedBy: true 
+          },
+        },
         author: {
           select: {
             name: true,

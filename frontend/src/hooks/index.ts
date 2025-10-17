@@ -1,16 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react"
 import { BACKEND_URL } from "../config";
+import Blog from "@/interface/BlogInterface";
 
-export interface Blog{
-    "content": string,
-        "title": string,
-        "id": number,
-        "author": {
-            "name": string
-        },
-        "createdAt" : string
-}
 
 export const useBlog = ({ id } : { id: string }) => {
     const [loading , setLoading] =  useState(true);
