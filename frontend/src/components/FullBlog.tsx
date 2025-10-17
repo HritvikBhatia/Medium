@@ -26,7 +26,7 @@ export const FullBlog = ({ blog }: { blog: Blog }) => {
   const [liked, setLiked] = useState<boolean>(false);
   const [likes, setLikes] = useState(blog._count.likedBy);
 
-  const [bookmarked, setBookmarked] = useState<Boolean>(false);
+  const [bookmarked, setBookmarked] = useState<boolean>(false);
   const [bookmarkes, setBookmarkes] = useState(blog._count.bookmarkedBy);
 
   useEffect(() => {
