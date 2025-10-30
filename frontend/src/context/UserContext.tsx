@@ -34,7 +34,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
   useEffect(() => {
-   fetchUser();
+    const token = localStorage.getItem("authorization")
+    if(token){
+      fetchUser();
+    }
   }, []);
 
   return (

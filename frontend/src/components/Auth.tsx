@@ -17,8 +17,8 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     password: "",
   });
 
-const user = localStorage.getItem("authorization")
-if (user) {
+const Token = localStorage.getItem("authorization")
+if (Token) {
   return <Navigate to="/blogs" replace />;
 }
 
@@ -37,7 +37,6 @@ async function SendRequest() {
     localStorage.setItem("authorization", `Bearer ${jwt}`);
     // console.log(localStorage.getItem("authorization"))
 
-    toast.success(`${type === "signup" ? "Signup" : "Signin"} successful!`);
     navigate("/blogs", { replace: true });
   } catch (error: unknown) {
     console.error("Auth Error:", error);

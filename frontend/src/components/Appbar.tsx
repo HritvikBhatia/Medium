@@ -1,47 +1,38 @@
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, PenSquare, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
-import { BACKEND_URL } from "@/config";
 import { useEffect, useMemo, useState } from "react";
 import { Avatar } from "./BlogCard";
+import { useUser } from "@/context/UserContext";
 
 export const Appbar = () => {
   const navigate = useNavigate();
+  const { user, refreshUser } = useUser();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    refreshUser();
+  }, []);
+
+  const displayName = useMemo(
+    () => user?.name || user?.username || "User",
+    [user]
+  );
+  useEffect(() => {
+    if (user?.username) {
+      localStorage.setItem("username", user.username);
+    }
+  }, [user]);
+
   const logOut = () => {
     localStorage.removeItem("authorization");
     localStorage.removeItem("username");
     navigate("/Signin");
   };
 
-  const [username, setUsername] = useState({ name: "", username: "" });
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  async function fetchUser() {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/v1/user/profile`, {
-        headers: {
-          Authorization: localStorage.getItem("authorization"),
-        },
-      });
-      setUsername(response.data.user);
-    } catch (e) {
-      toast.error("Failed to fetch user info");
-      console.log(e);
-    }
+  if (!user) {
+    return <div>Re-fetching user... please wait</div>;
   }
-  
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const displayName = useMemo(
-    () => username.name || username.username || "User",
-    [username]
-  );
-
-  localStorage.setItem("username", username.username);
-
   return (
     <header className="border-b border-zinc-200 backdrop-blur-xl bg-white/80 shadow-sm z-50 fixed top-0 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,10 +53,7 @@ export const Appbar = () => {
           {/* Right Section */}
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Create Blog Button */}
-            <Link
-              to={"/publish"}
-              className="group"
-            >
+            <Link to={"/publish"} className="group">
               <button className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 text-sm">
                 <PenSquare size={16} className="hidden sm:block" />
                 <span className="hidden sm:inline">Create</span>
@@ -85,7 +73,7 @@ export const Appbar = () => {
                     {displayName}
                   </p>
                   <p className="text-xs text-zinc-500">
-                    {username.username || "user"}
+                    {user.username || "user"}
                   </p>
                 </div>
                 <svg
@@ -125,7 +113,7 @@ export const Appbar = () => {
                             {displayName}
                           </p>
                           <p className="text-xs text-zinc-600 truncate">
-                            @{username.username || "user"}
+                            {user.username || "user"}
                           </p>
                         </div>
                       </div>
@@ -163,7 +151,6 @@ export const Appbar = () => {
                         </div>
                       </Link>
 
-                      
                       <div className="my-2 border-t border-zinc-200" />
 
                       <button
@@ -181,9 +168,7 @@ export const Appbar = () => {
                           <p className="text-sm font-semibold text-red-600">
                             Sign Out
                           </p>
-                          <p className="text-xs text-red-400">
-                            See you soon!
-                          </p>
+                          <p className="text-xs text-red-400">See you soon!</p>
                         </div>
                       </button>
                     </div>
