@@ -49,3 +49,25 @@ export const useBlogs = () => {
         blogs
     }
 }
+
+// export const useUser = () => {
+//     const [loading , setLoading] =  useState(true);
+//     const [user, setUser] = useState<User>();
+
+//     useEffect(() => {
+//         axios.get(`${BACKEND_URL}/api/v1/user/profile`, {
+//             headers: {
+//                 Authorization: localStorage.getItem("authorization")
+//             }
+//         })
+//             .then(response => {
+//                 setUser(response.data.user);
+//                 setLoading(false);
+//             })
+//     }, [])
+
+//     return {
+//         loading,
+//         user
+//     }
+// }

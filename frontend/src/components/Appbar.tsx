@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { LogOut, PenSquare, Sparkles, BookmarkCheck } from "lucide-react";
+import { LogOut, PenSquare, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { BACKEND_URL } from "@/config";
@@ -19,7 +19,7 @@ export const Appbar = () => {
   
   async function fetchUser() {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/v1/blog/user`, {
+      const response = await axios.get(`${BACKEND_URL}/api/v1/user/profile`, {
         headers: {
           Authorization: localStorage.getItem("authorization"),
         },
@@ -134,7 +134,7 @@ export const Appbar = () => {
                     {/* Menu Items */}
                     <div className="py-2">
                       <Link
-                        to={"/blogs"}
+                        to={"/profile"}
                         onClick={() => setIsDropdownOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 transition-colors group"
                       >
@@ -155,7 +155,7 @@ export const Appbar = () => {
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-zinc-900">
-                            My Stories
+                            My Profile
                           </p>
                           <p className="text-xs text-zinc-500">
                             View all your posts
@@ -163,26 +163,7 @@ export const Appbar = () => {
                         </div>
                       </Link>
 
-                      <button
-                        onClick={() => {
-                          setIsDropdownOpen(false);
-                          // Navigate to bookmarks page when available
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 transition-colors group"
-                      >
-                        <div className="p-2 bg-purple-50 rounded-lg group-hover:bg-purple-100 transition-colors">
-                          <BookmarkCheck className="w-4 h-4 text-purple-600" />
-                        </div>
-                        <div className="text-left">
-                          <p className="text-sm font-semibold text-zinc-900">
-                            Saved Posts
-                          </p>
-                          <p className="text-xs text-zinc-500">
-                            Your bookmarks
-                          </p>
-                        </div>
-                      </button>
-
+                      
                       <div className="my-2 border-t border-zinc-200" />
 
                       <button

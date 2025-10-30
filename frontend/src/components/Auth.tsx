@@ -1,7 +1,7 @@
 import { SignupInput } from "@hritvik707/medium-common";
 import axios from "axios";
 import { ChangeEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../config";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner"; // <-- import Sonner
@@ -16,6 +16,11 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     username: "",
     password: "",
   });
+
+const user = localStorage.getItem("authorization")
+if (user) {
+  return <Navigate to="/blogs" replace />;
+}
 
 async function SendRequest() {
   try {
@@ -33,7 +38,7 @@ async function SendRequest() {
     // console.log(localStorage.getItem("authorization"))
 
     toast.success(`${type === "signup" ? "Signup" : "Signin"} successful!`);
-    navigate("/blogs");
+    navigate("/blogs", { replace: true });
   } catch (error: unknown) {
     console.error("Auth Error:", error);
 

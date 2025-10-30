@@ -2,7 +2,7 @@ import { CheckCircle, Clock } from "lucide-react";
 import { Link } from "react-router-dom"
 
 interface BlogCardProps{
-    authorName: string;
+    authorName?: string;
     title: string;
     content: string;
     publishedDate: string;
@@ -27,7 +27,7 @@ export const BlogCard = ({
                 <div className="relative z-10">
                     {/* Author info */}
                     <div className="flex items-center gap-3 mb-4">
-                        <Avatar name={authorName} size="small" />
+                        <Avatar name={authorName? authorName: "Anonymous"} size="small" />
                         <div className="flex items-center gap-2 text-sm flex-wrap">
                             <span className="font-bold text-zinc-900">{authorName}</span>
                             <Circle />

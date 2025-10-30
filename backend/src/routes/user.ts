@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { sign } from "hono/jwt";
+import { sign, verify } from "hono/jwt";
 import { signupInput, signinInput } from "@hritvik707/medium-common";
 
 export const userRouter = new Hono<{
@@ -9,7 +9,41 @@ export const userRouter = new Hono<{
     DATABASE_URL: string;
     JWT_SECRET: string;
   };
+  Variables: {
+    userId: string;
+  };
 }>();
+
+userRouter.use("/profile/*", async (c, next) => {
+  const authHeader = c.req.header("authorization") || "";
+  if (!authHeader.startsWith("Bearer ")) {
+    c.status(401);
+    return c.json({
+      message: "Authentication header missing or malformed",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const user = await verify(token, c.env.JWT_SECRET);
+    if (user) {
+      c.set("userId", String(user.id));
+      await next();
+    } else {
+      c.status(403);
+      return c.json({
+        message: "Invalid or expired token",
+      });
+    }
+  } catch (error) {
+    c.status(403);
+    return c.json({
+      message: "Authentication failed. Invalid token.",
+      error
+    });
+  }
+});
 
 userRouter.post("/signup", async (c) => {
   const prisma = new PrismaClient({
@@ -92,6 +126,86 @@ userRouter.post("/signin", async (c) => {
     c.status(500);
     return c.json({
       message: "An unexpected error occurred during sign in.",
+    });
+  }
+});
+
+/*get user profile*/
+userRouter.get("/profile", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const authorId = c.get("userId");
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(authorId),
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        blog:{
+          select:{
+            id:true,
+            title: true,
+            content: true,
+            createdAt: true,
+            likedBy: {
+              select:{
+                username: true
+              }
+            },
+            _count: {
+              select: { 
+                likedBy: true,
+                bookmarkedBy: true 
+              },
+            },
+          }
+        },
+        likedBlogs: {
+          select:{
+            id: true,
+            title: true,
+            content: true,
+            createdAt: true,
+          }
+        },
+        bookmarkedBlogs: {
+          select:{
+            id: true,
+            title: true,
+            content: true,    
+            createdAt: true,
+          }
+        },
+        _count: {
+          select:{
+            likedBlogs: true,
+            bookmarkedBlogs: true,
+          }
+        },
+      },
+    });
+
+    if (!user) {
+      c.status(404);
+      return c.json({
+        message: "User not found.",
+      });
+    }
+    return c.json({
+      user,
+    });
+  
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    c.status(500);
+    return c.json({
+      message: "An unexpected error occurred during fetching user profile.",
     });
   }
 });
