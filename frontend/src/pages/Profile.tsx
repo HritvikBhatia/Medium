@@ -15,8 +15,6 @@ function Profile() {
   }, []);
 
   const [page, setPage] = useState<PageType>("posts");
-  if (!user) {
-  }
 
   if (loading) {
     return (
