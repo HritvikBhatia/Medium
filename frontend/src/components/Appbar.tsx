@@ -1,28 +1,34 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { LogOut, PenSquare, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar } from "./BlogCard";
 import { useUser } from "@/context/UserContext";
 
 export const Appbar = () => {
   const navigate = useNavigate();
-  const { user, refreshUser } = useUser();
+  const { user, loading, refreshUser } = useUser();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     refreshUser();
   }, []);
 
-  const displayName = useMemo(
-    () => user?.name || user?.username || "User",
-    [user]
-  );
-  useEffect(() => {
-    if (user?.username) {
-      localStorage.setItem("username", user.username);
-    }
-  }, [user]);
+  if (loading) {
+    return (
+      <div className="flex justify-center mt-24">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {  
+    return (
+      <Navigate to="signin"/>
+    )
+  }
+
+  const displayName = user.name || user.username || "User"
 
   const logOut = () => {
     localStorage.removeItem("authorization");
@@ -30,9 +36,6 @@ export const Appbar = () => {
     navigate("/Signin");
   };
 
-  if (!user) {
-    return <div>Re-fetching user... please wait</div>;
-  }
   return (
     <header className="border-b border-zinc-200 backdrop-blur-xl bg-white/80 shadow-sm z-50 fixed top-0 w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,10 +45,10 @@ export const Appbar = () => {
             to={"/blogs"}
             className="flex items-center gap-2 group cursor-pointer"
           >
-            <div className="p-2 bg-gradient-to-br from-lime-500 via-lime-400 to-lime-300  rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
+            <div className="p-2 bg-linear-to-br from-lime-500 via-lime-400 to-lime-300  rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
               <Sparkles className="text-white" size={20} />
             </div>
-            <span className="font-bold text-2xl bg-gradient-to-r from-lime-500 to-lime-400 bg-clip-text text-transparent hidden sm:block">
+            <span className="font-bold text-2xl bg-linear-to-r from-lime-500 to-lime-400 bg-clip-text text-transparent hidden sm:block">
               Medium
             </span>
           </Link>
@@ -54,7 +57,7 @@ export const Appbar = () => {
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Create Blog Button */}
             <Link to={"/publish"} className="group">
-              <button className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 text-sm">
+              <button className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 text-gray-900 bg-linear-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-linear-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 text-sm">
                 <PenSquare size={16} className="hidden sm:block" />
                 <span className="hidden sm:inline">Create</span>
                 <span className="sm:hidden">Write</span>
@@ -105,7 +108,7 @@ export const Appbar = () => {
                   {/* Dropdown */}
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-zinc-200 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* User Info Section */}
-                    <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 border-b border-zinc-200">
+                    <div className="p-4 bg-linear-to-br from-indigo-50 to-purple-50 border-b border-zinc-200">
                       <div className="flex items-center gap-3 mb-2">
                         <Avatar name={displayName} size="large" />
                         <div className="flex-1 min-w-0">

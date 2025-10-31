@@ -42,7 +42,7 @@ function Profile() {
       <div className="grid grid-cols-1 md:grid-cols-[0.30fr_0.70fr] gap-12">
         {/* --- Left Side: Profile Card --- */}
         <div className="flex justify-center md:justify-end">
-          <div className="border border-black/[0.2] rounded-2xl flex flex-col items-start max-w-sm w-full p-6 shadow-lg sticky top-24">
+          <div className="border border-black/20 rounded-2xl flex flex-col items-start max-w-sm w-full p-6 shadow-lg sticky top-24">
             {/* Decorative Icons */}
             <Icon className="absolute h-6 w-6 -top-3 -left-3 text-black" />
             <Icon className="absolute h-6 w-6 -bottom-3 -left-3 text-black" />
@@ -107,7 +107,7 @@ function Profile() {
                 >
                   <li
                     key={blog.title}
-                    className="border border-black/[0.1] rounded-lg p-4 hover:shadow-md transition mb-1"
+                    className="border border-black/10 rounded-lg p-4 hover:shadow-md transition mb-1"
                   >
                     <h4 className="text-lg font-semibold text-black">
                       {blog.title}

@@ -20,23 +20,23 @@ function AppLayout() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <UserProvider>
-        <Routes>
-          {/* Routes without Appbar */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/signin" element={<Signin />} />
+    <UserProvider>
+      <BrowserRouter>
+          <Routes>
+            {/* Routes without Appbar */}
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/signin" element={<Signin />} />
 
-          {/* Routes with Appbar */}
-          <Route element={<AppLayout />}>
-            <Route path="/blog/:id" element={<Blog />} />
-            <Route path="/blogs" element={<Blogs />} />
-            <Route path="/publish" element={<Publish />} />
-            <Route path="/profile" element={<Profile />} />
-          </Route>
-        </Routes>
-      </UserProvider>
-    </BrowserRouter>
+            {/* Routes with Appbar */}
+            <Route element={<AppLayout />}>
+              <Route path="/blog/:id" element={<Blog />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/publish" element={<Publish />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+          </Routes>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
 
