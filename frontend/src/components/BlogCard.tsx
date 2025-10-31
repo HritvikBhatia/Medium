@@ -21,7 +21,7 @@ export const BlogCard = ({
         <Link key={id} to={`/blog/${id}`} className="block group"> 
             <article className="relative p-6 bg-white border border-zinc-200 rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
                 {/* Gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/0 via-purple-50/0 to-pink-50/0 group-hover:from-indigo-50/30 group-hover:via-purple-50/30 group-hover:to-pink-50/30 transition-all duration-300 rounded-3xl pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-br from-indigo-50/0 via-purple-50/0 to-pink-50/0 group-hover:from-indigo-50/30 group-hover:via-purple-50/30 group-hover:to-pink-50/30 transition-all duration-300 rounded-3xl pointer-events-none" />
                 
 
                 <div className="relative z-10">
@@ -107,7 +107,7 @@ export function Avatar({ name, size }: AvatarProps) {
     };
 
     return (
-        <div className={`${sizeClasses[size]} bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center font-bold text-white shadow-md ring-2 ring-indigo-100`}>
+        <div className={`${sizeClasses[size]} bg-linear-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center font-bold text-white shadow-md ring-2 ring-indigo-100`}>
             {name[0].toUpperCase()}
         </div>
     );
