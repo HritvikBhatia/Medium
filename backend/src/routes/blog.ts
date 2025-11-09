@@ -498,6 +498,80 @@ blogRouter.patch("/:id/view", async (c) => {
   }
 });
 
+blogRouter.patch("/:id/tags", async (c) => {
+  const id = c.req.param("id");
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  if (isNaN(Number(id))) {
+    c.status(400);
+    return c.json({ message: "Invalid blog ID format." });
+  }
+
+  try {
+    const body = await c.req.json();
+    const { addTags = [], removeTags = [] } = body;
+
+    const authorId = c.get("userId");
+
+    // Ensure the user owns this blog
+    const blog = await prisma.blog.findFirst({
+      where: { id: Number(id), authorId: Number(authorId) },
+      select: { id: true },
+    });
+
+    if (!blog) {
+      c.status(403);
+      return c.json({
+        message: "You do not have permission to modify tags for this blog.",
+      });
+    }
+
+    // Create or connect tags to add
+    const tagsToConnect = await Promise.all(
+      addTags.map(async (title: string) => {
+        const tag = await prisma.tag.upsert({
+          where: { title },
+          update: {},
+          create: { title },
+        });
+        return { id: tag.id };
+      })
+    );
+
+    // Find tags to disconnect (only if they exist)
+    const tagsToDisconnect = await prisma.tag.findMany({
+      where: { title: { in: removeTags } },
+      select: { id: true },
+    });
+
+    // Update the blog
+    const updatedBlog = await prisma.blog.update({
+      where: { id: Number(id) },
+      data: {
+        tags: {
+          connect: tagsToConnect,
+          disconnect: tagsToDisconnect,
+        },
+      },
+      include: { tags: true },
+    });
+
+    return c.json({
+      message: "Tags updated successfully.",
+      tags: updatedBlog.tags.map((t) => t.title),
+    });
+  } catch (error) {
+    console.error("Error updating tags:", error);
+    c.status(500);
+    return c.json({
+      message: "Failed to update tags.",
+    });
+  }
+});
+
+
 blogRouter.delete("/:id", async (c) => {
   const id = c.req.param("id");
 
