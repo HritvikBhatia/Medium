@@ -14,23 +14,31 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String?
-  username String  @unique
-  password String
-  blog     Blog[]
-  likedBlogs Blog[] @relation("Likes")
-  bookmarkedBlogs Blog[] @relation("Bookmarks")
+  id              Int     @id @default(autoincrement())
+  name            String?
+  username        String  @unique
+  password        String
+  blog            Blog[]
+  likedBlogs      Blog[]  @relation("Likes")
+  bookmarkedBlogs Blog[]  @relation("Bookmarks")
 }
 
 model Blog {
-  id            Int       @id @default(autoincrement())
-  authorId      Int
-  title         String
-  content       String
-  published     Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  author        User      @relation(fields: [authorId], references: [id])
-  likedBy       User[]    @relation("Likes")
-  bookmarkedBy  User[]    @relation("Bookmarks")
+  id           Int      @id @default(autoincrement())
+  authorId     Int
+  title        String
+  content      String
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  author       User     @relation(fields: [authorId], references: [id])
+  likedBy      User[]   @relation("Likes")
+  bookmarkedBy User[]   @relation("Bookmarks")
+  tags         tag[]    @relation("Tags")
+  views        Int      @default(0) // simple view counter
+}
+
+model tag {
+  id    Int    @id @default(autoincrement())
+  title String @unique
+  blogs Blog[] @relation("Tags")
 }

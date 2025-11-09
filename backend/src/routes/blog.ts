@@ -336,6 +336,7 @@ blogRouter.get("/bulk", async (c) => {
             name: true,
           },
         },
+        views: true
       },
     });
 
@@ -433,6 +434,7 @@ blogRouter.get("/:id", async (c) => {
             name: true,
           },
         },
+        views: true, 
       },
     });
 
@@ -452,6 +454,47 @@ blogRouter.get("/:id", async (c) => {
     return c.json({
       message: "An unexpected error occurred while fetching the blog post.",
     });
+  }
+});
+
+blogRouter.patch("/:id/view", async (c) => {
+  const id = c.req.param("id");
+
+  if (isNaN(Number(id))) {
+    c.status(400);
+    return c.json({
+      message: "Invalid blog ID format.",
+    });
+  }
+
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  try {
+    await prisma.blog.update({
+      where: {
+        id: Number(id),
+      },
+      data:{
+        views:{
+          increment: 1
+        }
+      }
+    });
+
+    return c.json({
+      message: `view count + 1`,
+    });
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'P2025') {
+        c.status(404);
+        return c.json({
+            message: `Blog with ID ${id} not found `,
+        });
+    }
+    c.status(500);
+    return c.json({ error: "Failed to update views" });
   }
 });
 
