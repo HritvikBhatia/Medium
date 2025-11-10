@@ -336,6 +336,11 @@ blogRouter.get("/bulk", async (c) => {
             name: true,
           },
         },
+        tags:{
+          select:{
+            title: true
+          }
+        },
         views: true
       },
     });
@@ -410,6 +415,7 @@ blogRouter.get("/:id", async (c) => {
       },
       select: {
         id: true,
+        authorId: true,
         content: true,
         title: true,
         createdAt: true,
@@ -433,6 +439,11 @@ blogRouter.get("/:id", async (c) => {
           select: {
             name: true,
           },
+        },
+        tags:{
+          select:{
+            title: true
+          }
         },
         views: true, 
       },
@@ -588,9 +599,7 @@ blogRouter.delete("/:id", async (c) => {
 
   try {
     await prisma.blog.delete({
-      where: {
-        id: Number(id),
-      },
+      where: { id: Number(id), authorId: Number(c.get("userId")) }
     });
 
     return c.json({

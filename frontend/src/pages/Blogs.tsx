@@ -33,6 +33,7 @@ export const Blogs = () => {
               title={blog.title}
               content={blog.content}
               publishedDate={new Date(blog.createdAt).toDateString()}
+              views={blog.views}
             />
           ))}
         </div>

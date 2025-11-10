@@ -1,4 +1,5 @@
 import { BACKEND_URL } from "@/config";
+import { useUser } from "@/context/UserContext";
 import Blog from "@/interface/BlogInterface";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -22,12 +23,51 @@ const Avatar = ({ size, name }: { size: number; name: string }) => {
   );
 };
 
-export const FullBlog = ({ blog }: { blog: Blog }) => {
+export const FullBlog = ({ blog, id }: { blog: Blog; id: number }) => {
+
+  const [views, setViews] = useState(blog.views);
+  const { user } = useUser();
+  if(!user){
+    console.log("not author");
+    return
+  }
+  
+  useEffect(() => {
+    if (Number.isNaN(id)) return;
+    console.log(localStorage.getItem("authorization"));
+    
+    const timer = setTimeout(() => {
+      axios.patch(`${BACKEND_URL}/api/v1/blog/${id}/view`,{},{
+        headers: {
+          Authorization: localStorage.getItem("authorization")
+        }
+      }).catch((err) =>
+        console.error("Failed to record view:", err)
+      );
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [id, BACKEND_URL]);
+  
+  useEffect(() => {
+    setViews(blog.views);
+  }, [blog.views]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+       setViews(v => v + 1); // optimistic UI
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [id]);
+
   const [liked, setLiked] = useState<boolean>(false);
   const [likes, setLikes] = useState(blog._count.likedBy);
 
   const [bookmarked, setBookmarked] = useState<boolean>(false);
   const [bookmarkes, setBookmarkes] = useState(blog._count.bookmarkedBy);
+
+  const [currentTags, setCurrentTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
     if (blog) {
@@ -39,6 +79,7 @@ export const FullBlog = ({ blog }: { blog: Blog }) => {
       );
       setLiked(userLiked);
       setBookmarked(userBookmarked);
+      setCurrentTags(blog.tags.map(tag => tag.title));
     }
   }, [blog]);
 
@@ -114,6 +155,43 @@ async function shareHandler() {
 }
 
 
+const handleAddTag = async () => {
+  const newTag = tagInput.trim().toLowerCase();
+  if (!newTag || currentTags.includes(newTag)) {
+    setTagInput("");
+    return; // Don't add empty or duplicate tags
+  }
+
+  try {
+    await axios.patch(
+      `${BACKEND_URL}/api/v1/blog/${blog.id}/tags`,
+      { addTags: [newTag] }, // Uses your backend endpoint
+      { headers: { Authorization: localStorage.getItem("authorization") } }
+    );
+    setCurrentTags([...currentTags, newTag]); // Optimistic update
+    setTagInput(""); // Clear input
+    toast.success(`Tag "#${newTag}" added!`);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to add tag.");
+  }
+};
+
+const handleRemoveTag = async (tagToRemove: string) => {
+  try {
+    await axios.patch(
+      `${BACKEND_URL}/api/v1/blog/${blog.id}/tags`,
+      { removeTags: [tagToRemove] }, // Uses your backend endpoint
+      { headers: { Authorization: localStorage.getItem("authorization") } }
+    );
+    setCurrentTags(currentTags.filter(t => t !== tagToRemove)); // Optimistic update
+    toast.success(`Tag "#${tagToRemove}" removed!`);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to remove tag.");
+  }
+};
+
   return (
     <div className="min-h-screen bg-linear-to-br from-zinc-50 via-white to-zinc-100">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -164,18 +242,55 @@ async function shareHandler() {
               <div className="prose prose-lg max-w-none text-zinc-700 leading-relaxed whitespace-pre-wrap">
                 {blog.content}
               </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mt-10 pt-8 border-t border-zinc-100">
-                <span className="px-4 py-2 bg-linear-to-r from-blue-50 to-blue-100 text-blue-700 rounded-full text-sm font-semibold border border-blue-200 hover:shadow-md transition-shadow cursor-pointer">
-                  #Writing
-                </span>
-                <span className="px-4 py-2 bg-linear-to-r from-purple-50 to-purple-100 text-purple-700 rounded-full text-sm font-semibold border border-purple-200 hover:shadow-md transition-shadow cursor-pointer">
-                  #Inspiration
-                </span>
-                <span className="px-4 py-2 bg-linear-to-r from-pink-50 to-pink-100 text-pink-700 rounded-full text-sm font-semibold border border-pink-200 hover:shadow-md transition-shadow cursor-pointer">
-                  #Stories
-                </span>
+              {/* tags */}
+              <div className="flex flex-wrap items-center gap-3 mt-10 pt-8 border-t border-zinc-100">
+                
+                {/* 1. Map from new state */}
+                {currentTags.map(tagTitle => (
+                  <span 
+                    key={tagTitle} 
+                    className="flex items-center group px-4 py-2 bg-linear-to-r from-blue-50 to-blue-100 text-blue-700 rounded-full text-sm font-semibold border border-blue-200"
+                  >
+                    #{tagTitle}
+                    
+                    {/* 2. Add remove button for author */}
+                    {user.id === blog.authorId && (
+                      <button 
+                        onClick={() => handleRemoveTag(tagTitle)}
+                        className="ml-2 -mr-1 text-blue-400 hover:text-red-600 opacity-50 group-hover:opacity-100 transition-all font-bold"
+                        title={`Remove tag ${tagTitle}`}
+                      >
+                        &times;
+                      </button>
+                    )}
+                  </span>
+                ))}
+                
+                {/* 3. Add the input and button logic for author */}
+                {user.id === blog.authorId && (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      placeholder="Add a tag..."
+                      className="px-4 py-2 text-sm border border-zinc-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+                      // Also add on Enter key
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddTag();
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={handleAddTag}
+                      className="px-5 py-2 bg-zinc-900 text-white rounded-full text-sm font-bold hover:bg-zinc-700 transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                )}
               </div>
             </article>
 
@@ -257,6 +372,14 @@ async function shareHandler() {
                 </svg>
                 Share
               </button>
+              <div className="flex items-center gap-2 px-6 py-3 bg-white border-2 border-zinc-200 rounded-xl text-sm font-semibold text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                </svg>
+                {views}
+              </div>
             </div>
           </div>
 
