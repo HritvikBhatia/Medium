@@ -1,6 +1,6 @@
 import { SignupInput } from "@hritvik707/medium-common";
 import axios from "axios";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../config";
 import { Loader2 } from "lucide-react";
@@ -105,6 +105,12 @@ async function SendRequest() {
               onChange={(e) => {
                 setPostInputs({ ...postInput, password: e.target.value });
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  SendRequest();
+                }
+              }}
             />
             <button
               disabled={loading}
@@ -136,10 +142,11 @@ interface labelledInputType {
   label: string;
   placeholder: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
   type?: string;
 }
 
-function LabelledInput({ label, placeholder, onChange, type }: labelledInputType) {
+function LabelledInput({ label, placeholder, onChange, onKeyDown, type }: labelledInputType) {
   return (
     <div>
       <label className="block pt-3 mb-2 text-sm font-medium text-black">{label}</label>
@@ -150,6 +157,7 @@ function LabelledInput({ label, placeholder, onChange, type }: labelledInputType
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         placeholder={placeholder}
         required
+        onKeyDown={onKeyDown}
       />
     </div>
   );

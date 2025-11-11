@@ -3,6 +3,7 @@ import { useUser } from "@/context/UserContext";
 import Blog from "@/interface/BlogInterface";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 
@@ -24,7 +25,7 @@ const Avatar = ({ size, name }: { size: number; name: string }) => {
 };
 
 export const FullBlog = ({ blog, id }: { blog: Blog; id: number }) => {
-
+  const navigate = useNavigate();
   const [views, setViews] = useState(blog.views);
   const { user } = useUser();
   if(!user){
@@ -34,7 +35,6 @@ export const FullBlog = ({ blog, id }: { blog: Blog; id: number }) => {
   
   useEffect(() => {
     if (Number.isNaN(id)) return;
-    console.log(localStorage.getItem("authorization"));
     
     const timer = setTimeout(() => {
       axios.patch(`${BACKEND_URL}/api/v1/blog/${id}/view`,{},{
@@ -191,6 +191,10 @@ const handleRemoveTag = async (tagToRemove: string) => {
     toast.error("Failed to remove tag.");
   }
 };
+
+function exploreAuthorHandler(){
+  navigate(`/user/${blog.authorId}`)
+}
 
   return (
     <div className="min-h-screen bg-linear-to-br from-zinc-50 via-white to-zinc-100">
@@ -387,33 +391,24 @@ const handleRemoveTag = async (tagToRemove: string) => {
           <div className="space-y-6 lg:sticky lg:top-20 lg:self-start">
             {/* Author Card */}
             <div className="bg-linear-to-br from-white to-zinc-50 border border-zinc-200 rounded-3xl p-6 shadow-xl shadow-zinc-200/50 hover:shadow-2xl transition-shadow">
-              <div className="flex items-start gap-4 mb-4">
+              <div className="flex items-center gap-4 mb-4">
                 <div className="relative">
                   <Avatar size={3} name={blog.author.name || "Anonymous"} />
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
                 </div>
-                <div className="flex-1">
                   <h3 className="text-xl font-bold text-zinc-900 mb-1">
                     {blog.author.name || "Anonymous"}
                   </h3>
-                  <p className="text-sm text-zinc-600 flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                    </svg>
-                    234 Followers
-                  </p>
-                </div>
               </div>
               <p className="text-sm text-zinc-700 leading-relaxed mb-5">
                 Passionate writer sharing thoughts and ideas through blogs.
                 Always exploring new perspectives.
               </p>
-              <button className="w-full px-5 py-3 bg-linear-to-r from-zinc-900 to-zinc-700 text-white rounded-xl text-sm font-bold hover:from-zinc-800 hover:to-zinc-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+              <button className="w-full px-5 py-3 bg-linear-to-r from-zinc-900 to-zinc-700 text-white rounded-xl text-sm font-bold hover:from-zinc-800 hover:to-zinc-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all" onClick={exploreAuthorHandler}>
                 <span className="flex items-center justify-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
-                  Follow Author
+                  Explore Author
                 </span>
               </button>
             </div>           

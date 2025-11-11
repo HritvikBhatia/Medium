@@ -8,6 +8,7 @@ import { Publish } from "./pages/Publish";
 import { Appbar } from "./components/Appbar";
 import Profile from "./pages/Profile";
 import { UserProvider } from "./context/UserContext";
+import UserBlog from "./components/UserBlog";
 
 function AppLayout() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/publish" element={<Publish />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/user/:id" element={<UserBlog />} />
             </Route>
           </Routes>
       </BrowserRouter>

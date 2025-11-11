@@ -7,6 +7,7 @@ export default interface User {
     title: string;
     content: string;
     createdAt: string;
+    views: number;
     likedBy: {
       username: string;
     }[];

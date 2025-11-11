@@ -130,7 +130,7 @@ userRouter.post("/signin", async (c) => {
   }
 });
 
-/*get user profile*/
+/*get user(own) profile*/
 userRouter.get("/profile", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -186,6 +186,54 @@ userRouter.get("/profile", async (c) => {
           select:{
             likedBlogs: true,
             bookmarkedBlogs: true,
+          }
+        },
+      },
+    });
+
+    if (!user) {
+      c.status(404);
+      return c.json({
+        message: "User not found.",
+      });
+    }
+    return c.json({
+      user,
+    });
+  
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    c.status(500);
+    return c.json({
+      message: "An unexpected error occurred during fetching user profile.",
+    });
+  }
+});
+
+/*get user(someone else) profile*/
+userRouter.get("/:id/blogs", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const authorId = c.req.param("id");
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(authorId),
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        blog:{
+          select:{
+            id:true,
+            title: true,
+            content: true,
+            createdAt: true,
+            views: true,
           }
         },
       },
