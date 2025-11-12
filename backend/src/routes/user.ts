@@ -14,14 +14,12 @@ function getVerificationTokenExpiresAt(): Date {
   return new Date(now.getTime() + EXPIRATION_HOURS * 60 * 60 * 1000);
 }
 
-require("dotenv").config();
-
 async function sendVerificationEmail(
   toEmail: string, 
   token: string, 
   c: any // Pass the context 'c' to access env
 ) {
-  const magicLink = `http://localhost:5173/verify-email?token=${token}`; // TODO: Change for production
+  const magicLink = `https://medium-blog-puce.vercel.app/verify-email?token=${token}`; // TODO: Change for production
   const { GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, SENDER_EMAIL } = c.env;
 
   if (!GMAIL_CLIENT_ID || !GMAIL_CLIENT_SECRET || !GMAIL_REFRESH_TOKEN || !SENDER_EMAIL) {
