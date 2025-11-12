@@ -9,6 +9,7 @@ import { Appbar } from "./components/Appbar";
 import Profile from "./pages/Profile";
 import { UserProvider } from "./context/UserContext";
 import UserBlog from "./components/UserBlog";
+import { VerifyEmail } from "./pages/VerifyEmail";
 
 function AppLayout() {
   return (
@@ -27,6 +28,7 @@ function App() {
             {/* Routes without Appbar */}
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
 
             {/* Routes with Appbar */}
             <Route element={<AppLayout />}>

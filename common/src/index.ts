@@ -27,6 +27,11 @@ export const updateBlogInput = z.object({
   id: z.number()
 })
 
+export const magicLinkInput = z.object({
+  username: z.string().email(),
+});
+
+export type MagicLinkInput = z.infer<typeof magicLinkInput>;
 export type SignupInput = z.infer<typeof signupInput>
 export type SigninInput = z.infer<typeof signinInput>
 export type CreateBlogInput = z.infer<typeof createBlogInput>

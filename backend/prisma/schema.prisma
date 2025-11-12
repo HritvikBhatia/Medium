@@ -14,13 +14,26 @@ datasource db {
 }
 
 model User {
-  id              Int     @id @default(autoincrement())
-  name            String?
-  username        String  @unique
-  password        String
-  blog            Blog[]
-  likedBlogs      Blog[]  @relation("Likes")
-  bookmarkedBlogs Blog[]  @relation("Bookmarks")
+  id                 Int                 @id @default(autoincrement())
+  name               String?
+  username           String              @unique
+  password           String
+  blog               Blog[]
+  likedBlogs         Blog[]              @relation("Likes")
+  bookmarkedBlogs    Blog[]              @relation("Bookmarks")
+  verified           Boolean             @default(false)
+  verificationTokens VerificationToken[]
+}
+
+model VerificationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Blog {

@@ -17,54 +17,73 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
     password: "",
   });
 
-const Token = localStorage.getItem("authorization")
-if (Token) {
-  return <Navigate to="/blogs" replace />;
-}
+  const Token = localStorage.getItem("authorization");
+  if (Token) {
+    return <Navigate to="/blogs" replace />;
+  }
 
-async function SendRequest() {
-  try {
-    setLoading(true);
+  async function SendRequest() {
+    try {
+      setLoading(true);
 
-    const response = await axios.post(
-      `${BACKEND_URL}/api/v1/user/${type === "signup" ? "signup" : "signin"}`,
-      postInput
-    );
+      if (type === "signup") {
+        // --- SIGNUP LOGIC ---
+        const response = await axios.post(
+          `${BACKEND_URL}/api/v1/user/signup`,
+          postInput
+        );
 
-    const jwt = response.data;
-    // console.log(jwt);
-    
-    localStorage.setItem("authorization", `Bearer ${jwt}`);
-    // console.log(localStorage.getItem("authorization"))
+        // Show success message from backend
+        toast.success(
+          response.data.message || "Account created. Please check your email."
+        );
+        // Navigate to signin page so they can log in *after* verifying
+        navigate("/signin", { replace: true });
+      } else {
+        // --- SIGNIN LOGIC (remains the same) ---
+        const response = await axios.post(
+          `${BACKEND_URL}/api/v1/user/signin`,
+          postInput
+        );
 
-    navigate("/blogs", { replace: true });
-  } catch (error: unknown) {
-    console.error("Auth Error:", error);
+        const jwt = response.data;
+        // console.log(jwt);
 
-    let message = "Something went wrong. Please try again.";
+        localStorage.setItem("authorization", `Bearer ${jwt}`);
+        // console.log(localStorage.getItem("authorization"))
 
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-      const dataMessage = error.response?.data?.message;
+        navigate("/blogs", { replace: true });
+      }
+    } catch (error: unknown) {
+      console.error("Auth Error:", error);
 
-      if (type === "signup" && (status === 411 || status === 409)) {
-        message = "User already exists. Please sign in instead.";
-      } else if (dataMessage) {
-        message = dataMessage;
-      } else if (status) {
-        message = `Request failed with status ${status}`;
-      } else if (error.message) {
+      let message = "Something went wrong. Please try again.";
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const dataMessage = error.response?.data?.message;
+
+        if (type === "signin" && status === 403) {
+          message =
+            dataMessage || "Please verify your email before logging in.";
+        } else if (type === "signup" && (status === 411 || status === 409)) {
+          message = "User already exists. Please sign in instead.";
+        } else if (dataMessage) {
+          message = dataMessage;
+        } else if (status) {
+          message = `Request failed with status ${status}`;
+        } else if (error.message) {
+          message = error.message;
+        }
+      } else if (error instanceof Error) {
         message = error.message;
       }
-    } else if (error instanceof Error) {
-      message = error.message;
-    }
 
-    toast.error(message);
-  } finally {
-    setLoading(false);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   return (
     <div className="h-screen flex justify-center flex-col">
@@ -74,8 +93,13 @@ async function SendRequest() {
             <div className="text-3xl font-extrabold">Create an account</div>
 
             <div className="text-slate-400">
-              {type === "signin" ? "Don't have an account?" : "Already have an account?"}
-              <Link className="pl-2 underline" to={type === "signin" ? "/signup" : "/signin"}>
+              {type === "signin"
+                ? "Don't have an account?"
+                : "Already have an account?"}
+              <Link
+                className="pl-2 underline"
+                to={type === "signin" ? "/signup" : "/signin"}
+              >
                 {type === "signin" ? "Sign up" : "Sign in"}
               </Link>
             </div>
@@ -106,7 +130,7 @@ async function SendRequest() {
                 setPostInputs({ ...postInput, password: e.target.value });
               }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   e.preventDefault();
                   SendRequest();
                 }
@@ -146,10 +170,18 @@ interface labelledInputType {
   type?: string;
 }
 
-function LabelledInput({ label, placeholder, onChange, onKeyDown, type }: labelledInputType) {
+function LabelledInput({
+  label,
+  placeholder,
+  onChange,
+  onKeyDown,
+  type,
+}: labelledInputType) {
   return (
     <div>
-      <label className="block pt-3 mb-2 text-sm font-medium text-black">{label}</label>
+      <label className="block pt-3 mb-2 text-sm font-medium text-black">
+        {label}
+      </label>
       <input
         onChange={onChange}
         type={type || "text"}
