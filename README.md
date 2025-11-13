@@ -81,6 +81,10 @@ The project is organized into three main directories:
 
       * `DATABASE_URL`: Your PostgreSQL connection string (it's recommended to use a connection pooler like Prisma Accelerate).
       * `JWT_SECRET`: A strong, random secret for signing tokens.
+      * `GMAIL_CLIENT_ID`
+      * `GMAIL_CLIENT_SECRET`
+      * `GMAIL_REFRESH_TOKEN`
+      * `SENDER_EMAIL`
 
 5.  Sync your database schema with Prisma:
 
