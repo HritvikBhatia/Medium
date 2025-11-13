@@ -1,18 +1,14 @@
 import { useUser } from "@/context/UserContext";
 import { EvervaultCard, Icon } from "@/components/ui/evervault-card";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 type PageType = "posts" | "bookmarked" | "liked";
 
 function Profile() {
 
-  const { loading, user, refreshUser } = useUser();
-  
-  useEffect(() => {
-    refreshUser();
-  }, []);
+  const { loading, user} = useUser();
 
   const [page, setPage] = useState<PageType>("posts");
 

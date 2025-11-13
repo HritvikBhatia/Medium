@@ -29,6 +29,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (err) {
       console.error("Failed to fetch user:", err);
       setUser(null);
+      localStorage.removeItem("authorization");
+      localStorage.removeItem("username");
     } finally {
       setLoading(false);
     }
@@ -54,3 +56,4 @@ export const useUser = (): UserContextType => {
   }
   return context;
 };
+ 

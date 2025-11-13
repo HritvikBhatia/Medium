@@ -14,10 +14,7 @@ function getVerificationTokenExpiresAt(): Date {
   return new Date(now.getTime() + EXPIRATION_HOURS * 60 * 60 * 1000);
 }
 
-async function sendVerificationEmail(
-  toEmail: string, 
-  token: string, 
-  c: any // Pass the context 'c' to access env
+async function sendVerificationEmail(toEmail: string, token: string, c: any // Pass the context 'c' to access env
 ) {
   const magicLink = `https://medium-blog-puce.vercel.app/verify-email?token=${token}`; // TODO: Change for production
   const { GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, SENDER_EMAIL } = c.env;

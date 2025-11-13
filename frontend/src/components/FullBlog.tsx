@@ -28,10 +28,6 @@ export const FullBlog = ({ blog, id }: { blog: Blog; id: number }) => {
   const navigate = useNavigate();
   const [views, setViews] = useState(blog.views);
   const { user } = useUser();
-  if(!user){
-    console.log("not author");
-    return
-  }
   
   useEffect(() => {
     if (Number.isNaN(id)) return;
@@ -70,18 +66,25 @@ export const FullBlog = ({ blog, id }: { blog: Blog; id: number }) => {
   const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
-    if (blog) {
+    if (blog && user) {
       const userLiked = blog.likedBy.some(
-        (u) => u.username === localStorage.getItem("username")
+        (u) => u.username === user.username 
       );
       const userBookmarked = blog.bookmarkedBy.some(
-        (u) => u.username === localStorage.getItem("username")
+        (u) => u.username === user.username
       );
       setLiked(userLiked);
       setBookmarked(userBookmarked);
       setCurrentTags(blog.tags.map(tag => tag.title));
     }
-  }, [blog]);
+  }, [blog, user]);
+
+
+    if(!user){
+    console.log("not author");
+    navigate("/signin")
+    return
+  }
 
   const likeHandler = async () => {
     try {

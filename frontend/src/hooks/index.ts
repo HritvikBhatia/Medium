@@ -20,7 +20,11 @@ export const useBlog = ({ id } : { id: string }) => {
                 // console.log("id blogs "+response.data.blogs);
                 setLoading(false);
             })
-    }, [])
+            .catch(err => {
+                console.error("Failed to fetch blogs:", err);
+                setLoading(false);
+            });
+    }, [id])
 
     return {
         loading,
@@ -43,6 +47,10 @@ export const useBlogs = () => {
                 // console.log("Full bulk response:", response.data);
                 setLoading(false);
             })
+            .catch(err => {
+                console.error("Failed to fetch blogs:", err);
+                setLoading(false); 
+            });
     }, [])
 
     return {
@@ -65,6 +73,10 @@ export const useUserBlog = ({ id } : { id: string }) => {
                 setUser(response.data.user);
                 setLoading(false);
             })
+            .catch(err => {
+                console.error("Failed to fetch user blogs:", err);
+                setLoading(false);
+            });
     }, [])
 
     return {

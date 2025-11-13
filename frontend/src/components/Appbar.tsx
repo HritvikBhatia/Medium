@@ -1,18 +1,14 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { LogOut, PenSquare, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Avatar } from "./BlogCard";
 import { useUser } from "@/context/UserContext";
 
 export const Appbar = () => {
   const navigate = useNavigate();
-  const { user, loading, refreshUser } = useUser();
+  const { user, loading} = useUser();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  useEffect(() => {
-    refreshUser();
-  }, []);
 
   if (loading) {
     return (
