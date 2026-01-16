@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { prisma } from "../lib/prisma"
 import { verify } from "hono/jwt";
 import { createBlogInput, updateBlogInput } from "@hritvik707/medium-common";
 
@@ -26,7 +25,7 @@ blogRouter.use("/*", async (c, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const user = await verify(token, c.env.JWT_SECRET);
+    const user = await verify(token, c.env.JWT_SECRET, 'HS256');
     if (user) {
       c.set("userId", String(user.id));
       await next();
@@ -46,9 +45,9 @@ blogRouter.use("/*", async (c, next) => {
 });
 
 blogRouter.post("/", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  // const prisma = new PrismaClient({
+  //   datasourceUrl: c.env.DATABASE_URL,
+  // }).$extends(withAccelerate());
 
   try {
     const body = await c.req.json();
@@ -89,9 +88,6 @@ blogRouter.post("/:id/like", async (c) => {
 
   const id = c.req.param("id");
 
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     
@@ -131,9 +127,6 @@ blogRouter.delete("/:id/like", async (c) => {
 
   const id = c.req.param("id");
 
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     
@@ -173,10 +166,6 @@ blogRouter.post("/:id/bookmark", async (c) => {
 
   const id = c.req.param("id");
 
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
   try {
     
     if (isNaN(Number(id))) {
@@ -215,9 +204,6 @@ blogRouter.delete("/:id/bookmark", async (c) => {
 
   const id = c.req.param("id");
 
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     
@@ -254,9 +240,6 @@ blogRouter.delete("/:id/bookmark", async (c) => {
 
 
 blogRouter.put("/", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     const body = await c.req.json();
@@ -304,9 +287,6 @@ blogRouter.put("/", async (c) => {
 });
 
 blogRouter.get("/bulk", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     const blogs = await prisma.blog.findMany({
@@ -358,9 +338,6 @@ blogRouter.get("/bulk", async (c) => {
 });
 
 blogRouter.get("/user", async (c) => {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   const authorId = c.get("userId");
 
@@ -404,9 +381,6 @@ blogRouter.get("/:id", async (c) => {
     });
   }
 
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     const blog = await prisma.blog.findFirst({
@@ -478,9 +452,6 @@ blogRouter.patch("/:id/view", async (c) => {
     });
   }
 
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     await prisma.blog.update({
@@ -511,9 +482,6 @@ blogRouter.patch("/:id/view", async (c) => {
 
 blogRouter.patch("/:id/tags", async (c) => {
   const id = c.req.param("id");
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   if (isNaN(Number(id))) {
     c.status(400);
@@ -592,10 +560,6 @@ blogRouter.delete("/:id", async (c) => {
       message: "Invalid blog ID format.",
     });
   }
-
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
 
   try {
     await prisma.blog.delete({
